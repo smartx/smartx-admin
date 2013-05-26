@@ -14,7 +14,7 @@ self.addEventListener('message', function(e) {
 		user_id=e.data.user_id;
 		lat=e.data.lat;
 		lng=e.data.lng;
-		interval=1+Math.random()*3;
+		interval=1+Math.random()*4;
 		seconds=interval;
 	}
 	init();

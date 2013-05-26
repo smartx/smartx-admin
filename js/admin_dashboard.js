@@ -349,7 +349,7 @@
         };
 
 
-        // LOAD  TDRIVERS
+        // LOAD RIDE REQUESTS
         
 
         var rides = data.rides;
@@ -357,6 +357,7 @@
         for(var i = 0 ; i<rides.length; i++){
 
           var userId = rides[i].user_id;
+          var rideId = rides[i].ride_id;
           var userLat = loadedUsers[userId].lat;
           var userLng = loadedUsers[userId].lng;
           var pickupLat=rides[i].pickup_lat;
@@ -403,7 +404,7 @@
 
               if(rideRequestTDriverToPickupPolylineStore['d'+assignedDrivers[j].tdriver_id]==null)
                 rideRequestTDriverToPickupPolylineStore['d'+assignedDrivers[j].tdriver_id]=[];
-              rideRequestTDriverToPickupPolylineStore['d'+assignedDrivers[j].tdriver_id]['u'+rides[i].user_id]=flightPath;
+              rideRequestTDriverToPickupPolylineStore['d'+assignedDrivers[j].tdriver_id][rideId]=flightPath;
               console.log(rideRequestTDriverToPickupPolylineStore);
               console.log(flightPath.getPath());
           };
@@ -434,8 +435,8 @@
         var contextMenuOptions={};
         var menuItems=[];
         
-        for(var uid in rideRequestTDriverToPickupPolylineStore[selectedId]){
-          menuItems.push({className:'context_menu_item', eventName:uid, label:uid});  
+        for(var rideId in rideRequestTDriverToPickupPolylineStore[selectedId]){
+          menuItems.push({className:'context_menu_item', eventName:rideId, label:uid});  
         }
         contextMenuOptions.menuItems=menuItems;
         contextMenuOptions.callback = function(){
@@ -446,8 +447,8 @@
         google.maps.event.addListener(tdriverContextMenu, 'menu_item_selected', function(latLng, eventName){
         //  latLng is the position of the ContextMenu
         //  eventName is the eventName defined for the clicked ContextMenuItem in the ContextMenuOptions
-          var uid=eventName;
-          var rideId=rideRequestIdStore[selectedId][uid];
+          var rideId=eventName;
+          // var rideId=rideRequestIdStore[selectedId][uid];
 
           console.log(latLng.latitude);
           $.ajax({ 
@@ -479,13 +480,14 @@
       function refreshPositions(data, map){
         if(data==null) return;
         console.log(data);
-        var newRides = data.rides;
 
+
+        // RE-PAINT RIDE LINES
+        var newRides = data.rides;
         var arrayStoreTemp=[];
 		    var newcreated=0;
         for(var i=0; i<newRides.length; i++){
-        	
-        	var uid='u'+newRides[i].user_id;
+        	// var uid=newRides[i].user_id;
           var rideRequestId = newRides[i].ride_id;
           var poliColor = newRides[i].status==1?rideRequestPolylineColor:ridePolylineColor;
 
@@ -496,17 +498,16 @@
             var did='d'+assignedDrivers[j].tdriver_id;
             if(rideRequestIdStore[did]==null)
               rideRequestIdStore[did]=[];
-            rideRequestIdStore[did][uid]=rideRequestId;
+            rideRequestIdStore[did][rideRequestId]=rideRequestId;
 
             if(rideRequestTDriverToPickupPolylineStore[did]!=null){
-              if(rideRequestTDriverToPickupPolylineStore[did][uid]!=null){
+              if(rideRequestTDriverToPickupPolylineStore[did][rideRequestId]!=null){
                 // exists
                 if(arrayStoreTemp[did]==null)
                   arrayStoreTemp[did]=[];
-                arrayStoreTemp[did][uid]=rideRequestTDriverToPickupPolylineStore[did][uid];
-                arrayStoreTemp[did][uid].setOptions({strokeColor:poliColor});
-
-                delete rideRequestTDriverToPickupPolylineStore[did][uid];
+                arrayStoreTemp[did][rideRequestId]=rideRequestTDriverToPickupPolylineStore[did][rideRequestId];
+                arrayStoreTemp[did][rideRequestId].setOptions({strokeColor:poliColor});
+                delete rideRequestTDriverToPickupPolylineStore[did][rideRequestId];
               }else{
                 //create new
                 var tdriverLat=dbMarkers[did].position.jb;
@@ -526,7 +527,7 @@
                 });
                 if(arrayStoreTemp[did]==null)
                   arrayStoreTemp[did]=[];
-                arrayStoreTemp[did][uid]=flightPath;
+                arrayStoreTemp[did][rideRequestId]=flightPath;
                 
                 newcreated++;
               }
@@ -549,16 +550,16 @@
 
             if(arrayStoreTemp[did]==null)
               arrayStoreTemp[did]=[];
-            arrayStoreTemp[did][uid]=flightPath;
+            arrayStoreTemp[did][rideRequestId]=flightPath;
             newcreated++;
             }
           }
         }
         //remaining rides in rideRequestTDriverToPickupPolylineStore should be deleted from the UI as they are not present in the server
         for(var did in rideRequestTDriverToPickupPolylineStore){
-          for(var uid in rideRequestTDriverToPickupPolylineStore[did]){
-            rideRequestTDriverToPickupPolylineStore[did][uid].setMap(null);
-            console.log(rideRequestTDriverToPickupPolylineStore[did][uid]);
+          for(var rideRequestIdVar in rideRequestTDriverToPickupPolylineStore[did]){
+            rideRequestTDriverToPickupPolylineStore[did][rideRequestIdVar].setMap(null);
+            console.log(rideRequestTDriverToPickupPolylineStore[did][rideRequestIdVar]);
           }
         }
         console.log("newcreated "+newcreated);
@@ -570,16 +571,36 @@
         var tdrivers = data.tdrivers;
         // if(tdrivers)
         for (var i = 0;  i<tdrivers.length; i++) {
-        	   var uiId='d'+tdrivers[i].id;
+        	  var uiId='d'+tdrivers[i].id;
 	          var fromLat = loadedTDrivers[tdrivers[i].id].lat;
-	          var fromLng = loadedTDrivers[tdrivers[i].id].lng;
-	          var toLat=tdrivers[i].lat;
-	          var toLng=tdrivers[i].lng;
+            var fromLng = loadedTDrivers[tdrivers[i].id].lng;
+            var toLat=tdrivers[i].lat;
+            var toLng=tdrivers[i].lng;
 
             if(fromLat!=toLat || fromLng!=toLng){
               console.log("changed markers");
               loadedTDrivers[tdrivers[i].id].lat=toLat;
               loadedTDrivers[tdrivers[i].id].lng=toLng;
+              // console.log(parseFloat(fromLat)+" "+parseFloat(fromLng));
+              // console.log((toLat)+" "+(toLng));
+              transition(uiId, fromLat, fromLng, toLat, toLng);
+            }
+        };
+
+                //refresh drivers positions
+        var users = data.users;
+        // if(tdrivers)
+        for (var i = 0;  i<users.length; i++) {
+            var uiId='u'+users[i].id;
+            var fromLat = loadedUsers[users[i].id].lat;
+            var fromLng = loadedUsers[users[i].id].lng;
+            var toLat=users[i].lat;
+            var toLng=users[i].lng;
+
+            if(fromLat!=toLat || fromLng!=toLng){
+              console.log("changed markers");
+              loadedUsers[users[i].id].lat=toLat;
+              loadedUsers[users[i].id].lng=toLng;
               // console.log(parseFloat(fromLat)+" "+parseFloat(fromLng));
               // console.log((toLat)+" "+(toLng));
               transition(uiId, fromLat, fromLng, toLat, toLng);

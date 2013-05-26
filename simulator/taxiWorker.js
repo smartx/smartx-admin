@@ -14,7 +14,7 @@ self.addEventListener('message', function(e) {
 		tdriver_id=e.data.tdriver_id;
 		lat=e.data.lat;
 		lng=e.data.lng;
-		interval=1+Math.random()*3;
+		interval=1+Math.random()*10;
 		seconds=interval;
 	}
 	init();
@@ -67,7 +67,7 @@ function init(){
 			//you can wander around
 			var si=Math.floor(Math.random()*4);
 			
-			var distance = Math.random()*5;
+			var distance = Math.random()*10;
 
 			newlat = lat+di[si]*distance/factor;
 			newlng = lng+dj[si]*distance/factor;

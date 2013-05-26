@@ -11,32 +11,32 @@
     <script type="text/javascript">
       var taxiWorker = [];
       var userWorker = [];
-        // $.ajax({
-        //     url: "../tdrivers/locations",
-        //     context: document.body,
-        //     type:'json'
-        //   }).done(function(data) {
-        //     console.log(data);
-        //     if(data==null) return;
-        //     for (var i = 0; i < data.length; i++) {
+        $.ajax({
+            url: "../tdrivers/locations",
+            context: document.body,
+            type:'json'
+          }).done(function(data) {
+            console.log(data);
+            if(data==null) return;
+            for (var i = 0; i < data.length; i++) {
 
-        //       var worker = new Worker('taxiWorker.js');
+              var worker = new Worker('taxiWorker.js');
 
-        //       worker.addEventListener('message', function(e) {
-        //         console.log('Worker '+e.data.id+' said:');
-        //         console.log(e.data.data);
-        //       }, false);
-        //       worker.postMessage({
-        //         type:'init',
-        //         tdriver_id:data[i]['id'],
-        //         lat:parseFloat(data[i]['lat']),
-        //         lng:parseFloat(data[i]['lng'])
-        //       }); // Send data to our worker.
+              worker.addEventListener('message', function(e) {
+                console.log('Worker '+e.data.id+' said:');
+                console.log(e.data.data);
+              }, false);
+              worker.postMessage({
+                type:'init',
+                tdriver_id:data[i]['id'],
+                lat:parseFloat(data[i]['lat']),
+                lng:parseFloat(data[i]['lng'])
+              }); // Send data to our worker.
 
-        //       taxiWorker[data[i]['tdriver_id']]=worker;
-        //       // console.log(data[i]['tdriver_id'] + " successfully worker init");
-        //     };
-        //   });
+              taxiWorker[data[i]['tdriver_id']]=worker;
+              // console.log(data[i]['tdriver_id'] + " successfully worker init");
+            };
+          });
         $.ajax({
             url: "../users/locations",
             context: document.body,
