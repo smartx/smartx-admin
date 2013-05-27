@@ -2,15 +2,16 @@ TDriver
 ============
 
 ### Update TDriver Location
+**request:**
+
 `POST`http://localhost:8888/tdriver/update_location
 
->DATA
-```
+``` 
 id=33
 &lat=-11.864414890431348
 &lng=-77.0938904899619
 ```
-response:
+**response:**
 ```
 1
 ```
@@ -20,15 +21,18 @@ User
 ====
 
 ### FakeLogin
+**request:**
+
 `GET` http://localhost:8888/user/fakelogin/__username__
 
-response
+**response:**
 ```js
 {"user_id":"103"}
 ```
 
 ### Update User Location
-`POST`http://localhost:8888/user/update_location
+#### request
+> POST http://smartx.com/user/update_location
 
 ```
 id=33
@@ -36,11 +40,14 @@ id=33
 &lng=-77.0938904899619
 ```
 
-response:
+**response:**
+
 ignore it for now
 
 
 ### Start Ride
+**request:**
+
 `POST` http://localhost:8888/user/start_ride
 
 >DATA
@@ -51,4 +58,6 @@ id=92
 &a=Some Address
 &r=Some reference
 ```
+**response:**
 
+ignore it for now
