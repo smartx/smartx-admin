@@ -4,7 +4,7 @@ TDriver
 
 
 ### Start Ride
-`POST`http://localhost:8888/user/start_ride
+>POST http://localhost:8888/user/start_ride
 
 DATA
 ```
