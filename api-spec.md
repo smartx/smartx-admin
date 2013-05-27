@@ -18,7 +18,7 @@ id=33
       "ride_id":"133",
       "lat":"-12.1231231",
       "lng":"-67.312312312",
-      "user_first_name":"Patricio",
+      "user_name":"Patricio", // User first Name
       "phone":"993923913"
     }
   ],
