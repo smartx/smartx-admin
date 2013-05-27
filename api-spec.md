@@ -4,12 +4,18 @@ TDriver
 
 
 ### Start Ride
-`POST`http://localhost:8888/users/start_ride
+`POST`http://localhost:8888/user/start_ride
 
-`u=92&la=-12.0956402734&ln=-77.0316267014&a=Some Address&r=Some reference`
+```
+id=92
+&lat=-12.0956402734
+&lng=-77.0316267014
+&a=Some Address
+&r=Some reference
+```
 
 ### Update Driver Location
-`POST`http://localhost:8888/driver/update_location
+`POST`http://localhost:8888/tdriver/update_location
 
 
 ```
@@ -25,7 +31,7 @@ User
 ====
 
 ### FakeLogin
-`GET`http://localhost:8888/users/fakelogin/**username**
+`GET`http://localhost:8888/user/fakelogin/**username**
 
 response
 {"user_id":"103"}
