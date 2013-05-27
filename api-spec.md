@@ -48,7 +48,7 @@ ignore it for now
 ### Start Ride
 
  
->`POST` http://smx.com/user/start_ride
+`POST` http://smx.com/user/start_ride
 
 ```
 id=92
