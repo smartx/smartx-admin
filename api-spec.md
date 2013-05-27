@@ -1,21 +1,7 @@
 TDriver
 ============
 
-
-
-### Start Ride
-`POST` http://localhost:8888/user/start_ride
-
->DATA
-```
-id=92
-&lat=-12.0956402734
-&lng=-77.0316267014
-&a=Some Address
-&r=Some reference
-```
-
-### Update Driver Location
+### Update TDriver Location
 `POST`http://localhost:8888/tdriver/update_location
 
 
@@ -25,7 +11,9 @@ id=33
 &lng=-77.0938904899619
 ```
 response:
-ignore it for now
+```
+1
+```
 
 
 User 
@@ -50,3 +38,17 @@ id=33
 
 response:
 ignore it for now
+
+
+### Start Ride
+`POST` http://localhost:8888/user/start_ride
+
+>DATA
+```
+id=92
+&lat=-12.0956402734
+&lng=-77.0316267014
+&a=Some Address
+&r=Some reference
+```
+
