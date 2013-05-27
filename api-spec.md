@@ -79,7 +79,7 @@ id=92
 ```
 
 ### Fetch User Riding Status
-`POST` http://smx.com/user/fetch_status
+`GET` http://smx.com/user/fetch_status
 
 
 ```
