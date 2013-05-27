@@ -11,9 +11,9 @@ TDriver
 ### Update Driver Location
 `POST`http://localhost:8888/drivers/update_location
 
-`user_id=33
+```user_id=33
   &lat=-11.864414890431348
-  &lng=-77.0938904899619`
+  &lng=-77.0938904899619```
 
 response:
 ignore it for now
