@@ -10,7 +10,7 @@ Update Driver location
 request:
 **POST**
 :http://localhost:8888/drivers/update_location
-data=33:-11.864414890431348:-77.09389048996191
+`data=33:-11.864414890431348:-77.0938904899619`
 response:
 ignore it for now
 
@@ -21,7 +21,7 @@ User
 FakeLogin
 request
 **GET**
-http://localhost:8888/users/fakelogin/raul
+http://localhost:8888/users/fakelogin/**{user_id}**
 response
 {"user_id":"103"}
 
