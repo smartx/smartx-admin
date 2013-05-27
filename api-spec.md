@@ -32,7 +32,7 @@ User
 
 ### Update User Location
 #### request
-> POST http://smartx.com/user/update_location
+> POST http://smx.com/user/update_location
 
 ```
 id=33
@@ -46,9 +46,8 @@ ignore it for now
 
 
 ### Start Ride
-**request:**
 
-`POST` http://localhost:8888/user/start_ride
+> POST` http://smx.com/user/start_ride
 
 >DATA
 ```
@@ -58,6 +57,6 @@ id=92
 &a=Some Address
 &r=Some reference
 ```
-**response:**
+---
 
 ignore it for now
