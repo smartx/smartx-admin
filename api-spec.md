@@ -97,7 +97,8 @@ id=92
     "tdriver_pic":"http://pic.smx.com/123.png",
     "tdriver_phone":"994939443",
     "ex_time":2, // expected time to wait for a tdriver to pick (in minutes)
-    "ex_ar_time":3 // expected time for the tdriver to arrive (in minutes)
+    "ex_ar_time":3 // expected time for the tdriver to arrive (in minutes). Present only if status is 2
+    "ex_land_time":12 // expected time to get to end location (in mins). Present only if status is 3
   }
 }
 ```
