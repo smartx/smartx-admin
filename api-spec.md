@@ -3,7 +3,7 @@ TDriver
 
 ### Update TDriver Location
 
-`POST`http://localhost:8888/tdriver/update_location
+`POST`http://smx.com/tdriver/update_location
 
 ``` 
 id=33
@@ -17,11 +17,13 @@ id=33
     {
       "ride_id":"133",
       "lat":"-12.1231231",
-      "lng":"-67.312312312"
+      "lng":"-67.312312312",
+      "user_first_name":"Patricio",
+      "phone":"993923913"
     }
   ],
   "meta":{
-  
+    code:"200"
   }
 }
 ```
