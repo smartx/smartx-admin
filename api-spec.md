@@ -69,5 +69,35 @@ id=92
 ---
 
 ```
-ignore it for now
+{
+  "data":{
+    "ride_id":"123",
+    "ex_time":2, // expected time to get a tdriver (in minutes)
+    "n_tdrivers":3 // number of tdrivers that received the request in the first shot
+  }
+}
+```
+
+### Fetch User Riding Status
+`POST` http://smx.com/user/fetch_status
+
+
+```
+id=92
+```
+---
+
+```
+{
+  "data":{
+    "ride_id":"123",
+    "status":1 // ride status (1=requested, 2=tdriver_coming, 3=riding)
+    "tdriver_id":"30", // present only if status is 2
+    "tdriver_name":"Taxista Ra Ra",
+    "tdriver_pic":"http://pic.smx.com/123.png",
+    "tdriver_phone":"994939443",
+    "ex_time":2, // expected time to wait for a tdriver to pick (in minutes)
+    "ex_ar_time":3 // expected time for the tdriver to arrive (in minutes)
+  }
+}
 ```
