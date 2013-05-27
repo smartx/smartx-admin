@@ -6,7 +6,7 @@ TDriver
 http://localhost:8888/users/start_ride
 `u=92&la=-12.0956402734&ln=-77.0316267014&a=Some Address&r=Some reference`
 
-# Update Driver location
+## Update Driver location
 request:
 **POST**
 :http://localhost:8888/drivers/update_location
