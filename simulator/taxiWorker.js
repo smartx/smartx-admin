@@ -22,8 +22,8 @@ self.addEventListener('message', function(e) {
   	
 }, false);
 
-var di=[1,-1,0,0];
-var dj=[0,0,1,-1];
+var di=[1,-1,0,0,1,1,-1,-1];
+var dj=[0,0,1,-1,-1,1,-1,1];
 var factor=1000;
 
 function init(){
@@ -65,7 +65,7 @@ function init(){
 			comment="lat+parseFloat(pointToGoLat)="+(lat+(pointToGoLat))/factorX+"Math.sin(3)="+Math.sin(3)+" pointToGoLat="+pointToGoLat+" pointToGoLng="+pointToGoLng+" distance="+distanceInMettersIWouldTravelInSecondsSeconds+" distanceToUser="+distanceToUser+" factorX="+factorX+" picking someone up";
 		}else{
 			//you can wander around
-			var si=Math.floor(Math.random()*4);
+			var si=Math.floor(Math.random()*8);
 			
 			var distance = Math.random()*10;
 

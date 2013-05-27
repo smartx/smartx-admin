@@ -281,7 +281,9 @@ var contextMenu;
         loadedUsers=[]
         for (var i = 0;  i<users.length; i++) {
         	var uid='u'+users[i].id;
-          var marker = new MarkerWithLabel({
+          // new MarkerWithLabel
+          // new google.maps.Marker(
+          var marker = new google.maps.Marker({
                 position: new google.maps.LatLng(users[i].lat, users[i].lng),
                 map:map,
                 labelContent: uid,
@@ -297,7 +299,8 @@ var contextMenu;
         loadedTDrivers = [];
         for (var i = 0;  i<tdrivers.length; i++) {
         	var did='d'+tdrivers[i].id;
-          var marker = new MarkerWithLabel({
+          // new MarkerWithLabel({
+          var marker = new google.maps.Marker({
     				position: new google.maps.LatLng(tdrivers[i].lat, tdrivers[i].lng),
     				map:map,
             labelContent: did,
