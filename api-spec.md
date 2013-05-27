@@ -2,9 +2,9 @@ TDriver
 ============
 
 
-POST
+**POST**
 http://localhost:8888/users/start_ride
-u=92&la=-12.0956402734&ln=-77.0316267014&a=Some Address&r=Some reference
+`u=92&la=-12.0956402734&ln=-77.0316267014&a=Some Address&r=Some reference`
 
 Update Driver location
 request:
@@ -20,7 +20,8 @@ User
 
 FakeLogin
 request
-GET:http://localhost:8888/users/fakelogin/raul
+**GET**
+http://localhost:8888/users/fakelogin/raul
 response
 {"user_id":"103"}
 
