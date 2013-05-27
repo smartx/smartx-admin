@@ -21,7 +21,7 @@ User
 ====
 
 ### FakeLogin
-`GET`http://localhost:8888/users/fakelogin/**{username}**
+`GET`http://localhost:8888/users/fakelogin/**username**
 
 response
 {"user_id":"103"}
