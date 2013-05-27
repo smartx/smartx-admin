@@ -32,7 +32,7 @@ User
 ====
 
 ### FakeLogin
-`GET`http://localhost:8888/user/fakelogin/__username__
+`GET` http://localhost:8888/user/fakelogin/__username__
 
 response
 ```js
