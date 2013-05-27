@@ -19,6 +19,8 @@ id=33
       "lat":"-12.1231231",
       "lng":"-67.312312312",
       "user_name":"Patricio", // User first Name
+      "address":"Av. Canada 324",
+      "ref":"Cruce canada con Guardia Civil",
       "phone":"993923913"
     }
   ],
