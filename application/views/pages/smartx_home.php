@@ -44,7 +44,12 @@
     <script type="text/javascript" src="js/vendor/jquery-1.9.0.min.js"></script>
     <script type="text/javascript" src="js/third/sprintf.min.js"></script>
     <script type="text/javascript" src="js/third/ContextMenu.js"></script>
+
+    <script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerwithlabel/1.1.8/src/markerwithlabel.js"></script>
+    <script type="text/javascript" src="js/utils.js"></script>
     <script type="text/javascript" src="js/admin_dashboard.js"></script>
+
+    
   </head>
   <body>
     <div id="map-canvas"/>

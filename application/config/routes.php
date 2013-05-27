@@ -48,6 +48,7 @@ $route['users/(.+)'] = "users/$1";
 $route['user/(.+)'] = "users/$1";
 $route['fblogin/dologin'] = 'fblogin/dologin';
 $route['fblogin'] = 'fblogin';
+$route['(:any)/(:any)'] = '$1/$2';
 $route['(:any)'] = 'pages/view/$1';
 $route['default_controller'] = 'pages/view';
 

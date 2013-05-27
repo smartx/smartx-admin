@@ -1,70 +1,32 @@
+var dbMarkers = [];
+var rideRequestTDriverToPickupPolylineStore = []; // 2D[tdriver_id][rideId] array of Markers
+var rideRequestUserToPickupPolylineStore = []; // 1D array [user_id]
+var rideRequestIdStore = [];
 
+var rideCircleStore=[];
+var range = 3000; // meters
 
-      var dbMarkers = [];
-      var rideRequestTDriverToPickupPolylineStore = []; // 2D[tdriver_id][user_id] array
-      var rideRequestUserToPickupPolylineStore = []; // 1D array [user_id]
-      var rideRequestIdStore = [];
+// var markerLatLng = [];
+var loadedTDrivers = [];
+var loadedUsers = []
 
-      // var markerLatLng = [];
-      var loadedTDrivers = [];
-      var loadedUsers = []
+var selectedMarker;
+var markerMode='tdriver';
+var userMarkerIcon = "http://westminster.boskalis.com/fileadmin/custom/images/marker_icon3.png";
+var selectedId;
+var map;
+var rideRequestPolylineColor = 'cyan';
+var ridePolylineColor = 'red';
+var userToPickupLineColor = 'gray'
 
-      var selectedMarker;
-      var markerMode='tdriver';
-      var userMarkerIcon = "http://westminster.boskalis.com/fileadmin/custom/images/marker_icon3.png";
-      var selectedId;
-      var map;
-      var rideRequestPolylineColor = 'cyan';
-      var ridePolylineColor = 'red';
-      var userToPickupLineColor = 'gray'
+      
 
-      function MyControl(controlName) {
-        var controlDiv = document.createElement("div");
-
-        // Set CSS styles for the DIV containing the control
-        // Setting padding to 5 px will offset the control
-        // from the edge of the map.
-        controlDiv.style.padding = '5px';
-        controlDiv.id=controlName;
-
-        // Set CSS for the control border.
-        var controlUI = document.createElement('div');
-        controlUI.style.backgroundColor = 'white';
-        controlUI.style.borderStyle = 'solid';
-        controlUI.style.borderWidth = '2px';
-        controlUI.style.cursor = 'pointer';
-        controlUI.style.textAlign = 'center';
-        controlUI.title = 'Click to set the map to Home';
-        controlDiv.appendChild(controlUI);
-
-        // Set CSS for the control interior.
-        var controlText = document.createElement('div');
-        controlText.style.fontFamily = 'Arial,sans-serif';
-        controlText.style.fontSize = '12px';
-        controlText.style.paddingLeft = '4px';
-        controlText.style.paddingRight = '4px';
-        controlText.innerHTML = '<strong>'+controlName+'</strong>';
-        controlUI.appendChild(controlText);
-
-        controlDiv.index = 1;
-        map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
-        return controlDiv;
-      }
-
-      function getPrettyDistance(distance) {
-        if (distance > 1) {
-          return sprintf("%.2f km", distance);
-        } else {
-          return sprintf("%.1f m", distance * 1000);
-        }
-      }
-
-      var contextMenuOptions={};
-      var menuItems=[];
-      menuItems.push({className:'context_menu_item', eventName:'call_taxi', label:'Call Taxi'});
-      menuItems.push({className:'context_menu_item', eventName:'zoom_out_click', label:'Zoom out'});
-      contextMenuOptions.menuItems=menuItems;
-      var contextMenu;
+var contextMenuOptions={};
+var menuItems=[];
+menuItems.push({className:'context_menu_item', eventName:'call_taxi', label:'Call Taxi'});
+menuItems.push({className:'context_menu_item', eventName:'zoom_out_click', label:'Zoom out'});
+contextMenuOptions.menuItems=menuItems;
+var contextMenu;
 
       function initialize() {
         // google.maps.visualRefresh=true;
@@ -270,10 +232,10 @@
                   loadedUsers[userReturnedId]=[];
                   loadedUsers[userReturnedId]['lat']=lat;
                   loadedUsers[userReturnedId]['lng']=lng;
-                  dbMarkers[userReturnedId] = event.overlay;
+                  dbMarkers['u'+userReturnedId] = event.overlay;
                 });
 	          	google.maps.event.addListener(event.overlay, 'click', markerClickEvent);
-		          google.maps.event.addListener(event.overlay, 'rightclick', markerRightClickEvent);
+		          google.maps.event.addListener(event.overlay, 'rightclick', userMarkerRightClickEvent);
               }
             }
           });
@@ -289,16 +251,17 @@
           
 
           $.ajax({
-            url: "users/everyone_locations",
+            url: "dashboard/everyone_locations",
             context: this
           }).done(function(data) {
             console.log(data);
             loadData(data, map);
+            refreshPositions(data, map); // load rides
 
             (function poll(){
                setTimeout(function(){
                   $.ajax({ 
-                    url: "users/everyone_locations",
+                    url: "dashboard/everyone_locations",
                    success: function(data){
                     refreshPositions(data, map);
                     poll();
@@ -307,11 +270,7 @@
             })();
 
           });
-        
-     
-
         drawingManager.setMap(map);
-        
       }
 
        var loadData = function(data, map){
@@ -322,14 +281,15 @@
         loadedUsers=[]
         for (var i = 0;  i<users.length; i++) {
         	var uid='u'+users[i].id;
-          var marker = new google.maps.Marker({
+          var marker = new MarkerWithLabel({
                 position: new google.maps.LatLng(users[i].lat, users[i].lng),
                 map:map,
-                icon:userMarkerIcon,
+                labelContent: uid,
+                icon:userMarkerIcon, 
                 title:uid
             });
           google.maps.event.addListener(marker, 'click', markerClickEvent);
-          google.maps.event.addListener(marker, 'rightclick', markerRightClickEvent);
+          google.maps.event.addListener(marker, 'rightclick', userMarkerRightClickEvent);
           dbMarkers[uid]=marker;
           loadedUsers[users[i].id]=users[i];
         };
@@ -337,9 +297,10 @@
         loadedTDrivers = [];
         for (var i = 0;  i<tdrivers.length; i++) {
         	var did='d'+tdrivers[i].id;
-          var marker = new google.maps.Marker({
+          var marker = new MarkerWithLabel({
     				position: new google.maps.LatLng(tdrivers[i].lat, tdrivers[i].lng),
     				map:map,
+            labelContent: did,
     				title:did
     			});
     			google.maps.event.addListener(marker, 'click', markerClickEvent);
@@ -347,73 +308,9 @@
     			dbMarkers[did]=marker;
           loadedTDrivers[tdrivers[i].id]=tdrivers[i];
         };
-
-
-        // LOAD RIDE REQUESTS
-        
-
-        var rides = data.rides;
-        // if(rides!=null){}
-        for(var i = 0 ; i<rides.length; i++){
-
-          var userId = rides[i].user_id;
-          var rideId = rides[i].ride_id;
-          var userLat = loadedUsers[userId].lat;
-          var userLng = loadedUsers[userId].lng;
-          var pickupLat=rides[i].pickup_lat;
-          var pickupLng=rides[i].pickup_lng;
-          console.log(userLat+""+userLng);
-
-          var flightPlanCoordinates = [
-            new google.maps.LatLng(userLat, userLng),
-            new google.maps.LatLng(pickupLat, pickupLng)
-          ];
-          var userToPickUpPointPolilyne = new google.maps.Polyline({
-            path: flightPlanCoordinates,
-            strokeColor: userToPickupLineColor,
-            strokeOpacity: 1.0,
-            strokeWeight: 2,
-            map:map
-          });
-          rideRequestUserToPickupPolylineStore[userId]=userToPickUpPointPolilyne;
-
-          var rideStatus = rides[i].status;
-          var poliColor = rideStatus==1?rideRequestPolylineColor:ridePolylineColor;
-
-          
-          // status-1 rides might have from 0 to multiple drivers assigned to it
-          var assignedDrivers = rides[i].assigned_tdrivers;
-
-          if(assignedDrivers==null)
-            continue;
-          console.log('olakase');
-          for (var j = 0; j < assignedDrivers.length; j++) {
-              var tdriverLat=dbMarkers['d'+assignedDrivers[j].tdriver_id].position.jb;
-              var tdriverLng=dbMarkers['d'+assignedDrivers[j].tdriver_id].position.kb;
-              var flightPlanCoordinates = [
-                    new google.maps.LatLng(pickupLat, pickupLng),
-                    new google.maps.LatLng(tdriverLat, tdriverLng)
-                  ];
-              var flightPath = new google.maps.Polyline({
-                path: flightPlanCoordinates,
-                strokeColor: poliColor,
-                strokeOpacity: 1.0,
-                strokeWeight: 2,
-                map:map
-              });
-
-              if(rideRequestTDriverToPickupPolylineStore['d'+assignedDrivers[j].tdriver_id]==null)
-                rideRequestTDriverToPickupPolylineStore['d'+assignedDrivers[j].tdriver_id]=[];
-              rideRequestTDriverToPickupPolylineStore['d'+assignedDrivers[j].tdriver_id][rideId]=flightPath;
-              console.log(rideRequestTDriverToPickupPolylineStore);
-              console.log(flightPath.getPath());
-          };
-          // TODO rest of statuses
-        }
-        // console.log(dbMarkers);
       }
 
-      var markerRightClickEvent = function(event){
+      var userMarkerRightClickEvent = function(event){
         console.log(event);
         console.log(this);
         selectedId = this.title;
@@ -436,7 +333,7 @@
         var menuItems=[];
         
         for(var rideId in rideRequestTDriverToPickupPolylineStore[selectedId]){
-          menuItems.push({className:'context_menu_item', eventName:rideId, label:uid});  
+          menuItems.push({className:'context_menu_item', eventName:rideId, label:rideId});  
         }
         contextMenuOptions.menuItems=menuItems;
         contextMenuOptions.callback = function(){
@@ -489,70 +386,39 @@
         for(var i=0; i<newRides.length; i++){
         	// var uid=newRides[i].user_id;
           var rideRequestId = newRides[i].ride_id;
+          var userId = newRides[i].user_id;
+          var userLat = loadedUsers[userId].lat;
+          var userLng = loadedUsers[userId].lng;
+          var pickupLatLng = new google.maps.LatLng(newRides[i].pickup_lat, newRides[i].pickup_lng)
+
+
+          //REFRESH PICKUP-POINT-2-USER LINE
+          var uid='u'+userId;
+          getExistingAndNewLines(uid,arrayStoreTemp,userToPickupLineColor,pickupLatLng,rideRequestId);
+
+
+          rideCircleStore[rideRequestId] = rideCircleStore[rideRequestId] || new google.maps.Circle({
+              map: map,
+              clickable: false,
+              radius: range,
+              fillColor: '#fff',
+              fillOpacity: .3,
+              strokeColor: '#313131',
+              strokeOpacity: .4,
+              strokeWeight: .8,
+              center: pickupLatLng,
+              // radius: citymap[city].population / 20
+          });
+
           var poliColor = newRides[i].status==1?rideRequestPolylineColor:ridePolylineColor;
 
           var assignedDrivers = newRides[i].assigned_tdrivers;
-          if(assignedDrivers==null)
-            continue;
+          // if(assignedDrivers==null)
+          //   continue;
+
           for (var j = 0; j < assignedDrivers.length; j++) {
             var did='d'+assignedDrivers[j].tdriver_id;
-            if(rideRequestIdStore[did]==null)
-              rideRequestIdStore[did]=[];
-            rideRequestIdStore[did][rideRequestId]=rideRequestId;
-
-            if(rideRequestTDriverToPickupPolylineStore[did]!=null){
-              if(rideRequestTDriverToPickupPolylineStore[did][rideRequestId]!=null){
-                // exists
-                if(arrayStoreTemp[did]==null)
-                  arrayStoreTemp[did]=[];
-                arrayStoreTemp[did][rideRequestId]=rideRequestTDriverToPickupPolylineStore[did][rideRequestId];
-                arrayStoreTemp[did][rideRequestId].setOptions({strokeColor:poliColor});
-                delete rideRequestTDriverToPickupPolylineStore[did][rideRequestId];
-              }else{
-                //create new
-                var tdriverLat=dbMarkers[did].position.jb;
-                var tdriverLng=dbMarkers[did].position.kb;
-                var pickupLat=newRides[i].pickup_lat;
-                var pickupLng=newRides[i].pickup_lng;
-                var flightPlanCoordinates = [
-                      new google.maps.LatLng(pickupLat, pickupLng),
-                      new google.maps.LatLng(tdriverLat, tdriverLng)
-                    ];
-                var flightPath = new google.maps.Polyline({
-                    path: flightPlanCoordinates,
-                    strokeColor: poliColor,
-                    strokeOpacity: 1.0,
-                    strokeWeight: 2,
-                    map:map
-                });
-                if(arrayStoreTemp[did]==null)
-                  arrayStoreTemp[did]=[];
-                arrayStoreTemp[did][rideRequestId]=flightPath;
-                
-                newcreated++;
-              }
-            }else{
-              var tdriverLat=dbMarkers[did].position.jb;
-              var tdriverLng=dbMarkers[did].position.kb;
-              var pickupLat=newRides[i].pickup_lat;
-              var pickupLng=newRides[i].pickup_lng;
-              var flightPlanCoordinates = [
-                    new google.maps.LatLng(pickupLat, pickupLng),
-                    new google.maps.LatLng(tdriverLat, tdriverLng)
-                  ];
-                var flightPath = new google.maps.Polyline({
-                  path: flightPlanCoordinates,
-                  strokeColor: poliColor,
-                  strokeOpacity: 1.0,
-                  strokeWeight: 2,
-                  map:map
-              });
-
-            if(arrayStoreTemp[did]==null)
-              arrayStoreTemp[did]=[];
-            arrayStoreTemp[did][rideRequestId]=flightPath;
-            newcreated++;
-            }
+            getExistingAndNewLines(did,arrayStoreTemp,poliColor,pickupLatLng,rideRequestId);
           }
         }
         //remaining rides in rideRequestTDriverToPickupPolylineStore should be deleted from the UI as they are not present in the server
@@ -562,8 +428,9 @@
             console.log(rideRequestTDriverToPickupPolylineStore[did][rideRequestIdVar]);
           }
         }
-        console.log("newcreated "+newcreated);
-        console.log(arrayStoreTemp);
+
+        // console.log("newcreated "+newcreated);
+        // console.log(arrayStoreTemp);
         rideRequestTDriverToPickupPolylineStore=arrayStoreTemp;
 
 
@@ -587,7 +454,7 @@
             }
         };
 
-                //refresh drivers positions
+        //refresh users positions
         var users = data.users;
         // if(tdrivers)
         for (var i = 0;  i<users.length; i++) {
@@ -605,9 +472,32 @@
               // console.log((toLat)+" "+(toLng));
               transition(uiId, fromLat, fromLng, toLat, toLng);
             }
-        };
+        }
       }
       
+      function getExistingAndNewLines(did,arrayStoreTemp,poliColor,pickupLatLng,rideRequestId){
+        if(rideRequestTDriverToPickupPolylineStore[did]!=null && rideRequestTDriverToPickupPolylineStore[did][rideRequestId]!=null){
+                        // line already exists,
+            arrayStoreTemp[did] = arrayStoreTemp[did] || [];
+            arrayStoreTemp[did][rideRequestId]=rideRequestTDriverToPickupPolylineStore[did][rideRequestId];
+            arrayStoreTemp[did][rideRequestId].setOptions({strokeColor:poliColor});
+            delete rideRequestTDriverToPickupPolylineStore[did][rideRequestId];
+          }else{
+            // create new line as it does not exists
+            var tdriverLat=dbMarkers[did].position.jb;
+            var tdriverLng=dbMarkers[did].position.kb;
+            var flightPath = new google.maps.Polyline({
+                path: [pickupLatLng,new google.maps.LatLng(tdriverLat, tdriverLng)],
+                strokeColor: poliColor,
+                // strokeOpacity: 1.0,
+                strokeWeight: 2,
+                map:map
+            });
+            arrayStoreTemp[did] = arrayStoreTemp[did] || [];
+            arrayStoreTemp[did][rideRequestId]=flightPath;
+            // newcreated++;
+        }
+      }
       function transition(id, fromLat, fromLng, toLat, toLng){
           currentDelta[id] = 0;
           deltaLat[id] = (toLat - fromLat)/numDeltas;
@@ -632,9 +522,9 @@
 
         if(rideRequestTDriverToPickupPolylineStore[id]!=null){
         	// console.log(1);
-	        for(var uid in rideRequestTDriverToPickupPolylineStore[id]){
-	        	var a = [rideRequestTDriverToPickupPolylineStore[id][uid].getPath().getAt(0),latlng];
-	        	rideRequestTDriverToPickupPolylineStore[id][uid].setPath(a);
+	        for(var rideId in rideRequestTDriverToPickupPolylineStore[id]){
+	        	var a = [rideRequestTDriverToPickupPolylineStore[id][rideId].getPath().getAt(0),latlng];
+	        	rideRequestTDriverToPickupPolylineStore[id][rideId].setPath(a);
 	        }	
         }
         
