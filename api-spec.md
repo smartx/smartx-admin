@@ -47,9 +47,9 @@ ignore it for now
 
 ### Start Ride
 
-> POST` http://smx.com/user/start_ride
+> 
+`POST` http://smx.com/user/start_ride
 
->DATA
 ```
 id=92
 &lat=-12.0956402734
@@ -60,6 +60,6 @@ id=92
 ---
 
 >
-~~~
+```
 ignore it for now
-~~~
+```
