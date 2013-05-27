@@ -35,7 +35,9 @@ User
 `GET`http://localhost:8888/user/fakelogin/__username__
 
 response
+```js
 {"user_id":"103"}
+```
 
 ### Update User Location
 `POST`http://localhost:8888/user/update_location
