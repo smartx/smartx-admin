@@ -1,4 +1,4 @@
-M_PI = 3.14159265358979323846
+M_PI = 3.14159265358979323846;
 var tdriver_id;
 var interval;
 var lat;
@@ -10,11 +10,12 @@ var seconds;
 
 self.addEventListener('message', function(e) {
 	importScripts('../js/third/jquery.hive.pollen.js');
+//        importScripts('https://maps.googleapis.com/maps/api/js?libraries=drawing&key=AIzaSyAK2rfeeudxNw8JVF_9u3tk9xxXkOe7-Mc&sensor=false');
 	if(e.data.type=='init'){
 		tdriver_id=e.data.tdriver_id;
 		lat=e.data.lat;
 		lng=e.data.lng;
-		interval=1+Math.random()*10;
+		interval=1+Math.random()*20;
 		seconds=interval;
 	}
 	init();
@@ -67,7 +68,7 @@ function init(){
 			//you can wander around
 			var si=Math.floor(Math.random()*8);
 			
-			var distance = Math.random()*10;
+			var distance = Math.random()*20;
 
 			newlat = lat+di[si]*distance/factor;
 			newlng = lng+dj[si]*distance/factor;
@@ -77,10 +78,11 @@ function init(){
 		lat=newlat;
 		lng=newlng;
 		 $.ajax.post({
-	        url: "../tdrivers/update_driver_location",
-	        data:"data="+tdriver_id+":"+newlat+":"+newlng,
+	        url: "../tdriver/update_location",
+	        data:"id="+tdriver_id+"&lat="+newlat+"&lng="+newlng,
 	        type:'json',
 	        success: function(data) {
+                    return;
 	        	var a = {id:tdriver_id, data:data};
 	        	self.postMessage(a);
 	        	if(data.json!=null && data.json.length!=0){
@@ -113,7 +115,8 @@ function init(){
 	function toRad(val) {
 		return val *  M_PI/ 180;
 	}
-
+        
+        
 }
 
 

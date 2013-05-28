@@ -35,31 +35,6 @@ class TDrivers extends CI_Controller {
 
 	}
 
-	public function update_driver_location()
-	{
-		$data = $this->input->post('data');
-		$data = explode(':',$data);
-		// print_r($data);
-		$tdriverId = $data[0];
-		$lat = $data[1];
-		$lng = $data[2];
-
-		// $newLocationsArray = json_decode($newLocations);
-		$locationToGo = $this->TDriverModel->updateTDriverLocation($tdriverId, $lat, $lng);
-		// print_r($locationToGo);
-		if($locationToGo!= null && $this->distance($locationToGo->lat, $locationToGo->lng, $lat, $lng)<=0.02){
-			$this->TDriverModel->startRiding($tdriverId, $locationToGo->ride_id, $lat, $lng);
-			$contents = $this->output
-		                  ->set_content_type('application/json')
-		                  ->set_output(json_encode(array()));
-		}else{
-			$contents = $this->output
-		                  ->set_content_type('application/json')
-		                  ->set_output(json_encode($locationToGo));
-		}
-		
-	}
-
 	public function clear_locations()
 	{
 		$ridesDeleted = $this->UserModel->clearRequestPolls();

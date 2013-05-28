@@ -13,10 +13,15 @@
 | always be used to set the mode correctly.
 |
 */
+// BEGIN CUSTOM CONSTANTS
+define('RIDE_SEARCH_RADIUS', 3.0);
+// END CUSTOM CONSTANTS
+
 define('FILE_READ_MODE', 0644);
 define('FILE_WRITE_MODE', 0666);
 define('DIR_READ_MODE', 0755);
 define('DIR_WRITE_MODE', 0777);
+
 
 /*
 |--------------------------------------------------------------------------

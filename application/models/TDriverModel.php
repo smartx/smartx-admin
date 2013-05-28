@@ -59,18 +59,18 @@ class TDriverModel extends CI_Model{
 	function updateTDriverLocation($tdriverId, $lat, $lng){
 
 		$sql = "INSERT INTO tdriver_location_histories (tdriver_id, lat, lng, reg_date) VALUES (?,?,?,NOW())";
-		$query = $this->db->query($sql,array($tdriverId, $lat, $lng));
+		$this->db->query($sql,array($tdriverId, $lat, $lng));
 
-		$sql = "UPDATE tdriver_latest_locations SET location = POINT(?,?), reg_date = NOW() WHERE tdriver_id = ?";
-		$query = $this->db->query($sql, array($lat, $lng, $tdriverId));
+		$sql2 = "UPDATE tdriver_latest_locations SET location = POINT(?,?), reg_date = NOW() WHERE tdriver_id = ?";
+		$this->db->query($sql2, array($lat, $lng, $tdriverId));
 
 		// return current location to pick up user, if any (used for testing)
-		$sql = "SELECT rrp.ride_id, ua.lat, ua.lng 
+		$sql3 = "SELECT rrp.ride_id, ua.lat, ua.lng 
 				FROM ride_request_polls rrp JOIN taxi_rides tr using(ride_id) 
 					JOIN user_addresses ua on(tr.origin_address_id = ua.address_id) 
 				WHERE tdriver_id = ? AND rrp.status = 2";
-		$query = $this->db->query($sql, array($tdriverId));
-		return $res = $query->row();
+		$query3 = $this->db->query($sql3, array($tdriverId));
+		return $res = $query3->row();
 	}
 
 	function createNewTDriver($initialLocation){

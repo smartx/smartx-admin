@@ -15,8 +15,7 @@ class Dashboard extends CI_Controller {
 		$users = $this->UserModel->getUserLocations();
 		$tdrivers = $this->TDriverModel->getTDriverLocations();
 		$rideRequestPolls = $this->UserModel->getRideRequestPolls();
-		$tempArr=array();
-
+                
 		// print_r($rideRequestPolls);
 		// return;
 		//BEGIN AGGREGATING RIDES 
@@ -73,7 +72,7 @@ class Dashboard extends CI_Controller {
 
 		$res = (object)array("users"=>$users, "tdrivers"=>$tdrivers, "rides"=>$aggregatedRides);
 		// print_r($locations);
-		$contents = $this->output
+		$this->output
 		                  ->set_content_type('application/json')
 		                  ->set_output(json_encode($res));
 		 // echo json_encode($data['tdrivers_locations']);

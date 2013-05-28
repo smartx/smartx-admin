@@ -6,33 +6,30 @@ class Users extends CI_Controller {
 		parent::__construct();
 		$this->load->model('UserModel');
 		$this->load->model('TDriverModel');
+                $this->load->model('RideModel');
 	}
 
 	public function update_location()
 	{
-		$data = $this->input->post('data');
-		$data = explode(':',$data);
-		// print_r($data);
-		$userId = $data[0];
-		$lat = $data[1];
-		$lng = $data[2];
+            $userId = $this->input->post('id');
+            $lat = $this->input->post('lat');
+            $lng = $this->input->post('lng');
 
 
-		$affectedRows = $this->UserModel->updateUserLocation($userId, $lat, $lng);
-		// print_r($locations);
-		$contents = $this->output
-		                  ->set_content_type('application/json')
-		                  ->set_output(json_encode($affectedRows));
-		 // echo json_encode($data['tdrivers_locations']);
-	}
+            $affectedRows = $this->UserModel->updateUserLocation($userId, $lat, $lng);
+            // print_r($locations);
+            $this->output
+                              ->set_content_type('application/json')
+                              ->set_output(json_encode($affectedRows));
+             // echo json_encode($data['tdrivers_locations']);
+            }
 	
 
 	public function locations()
 	{
 		$locations = $this->UserModel->getUserLocations();
 		// print_r($locations);
-		$contents = $this->output
-		                  ->set_content_type('application/json')
+		$this->output->set_content_type('application/json')
 		                  ->set_output(json_encode($locations));
 		 // echo json_encode($data['tdrivers_locations']);
 	}
@@ -59,8 +56,8 @@ class Users extends CI_Controller {
 			}else{
 				//Modify existing address
 				$reference = $this->input->post('r');
-				$Lat = $this->input->post('la');
-				$Lng = $this->input->post('ln');
+				$lat = $this->input->post('la');
+				$lng = $this->input->post('ln');
 				$userAddressId = $this->UserModel->updateUserAddress($userAddressId, $address, $reference, $lat, $lng);
 			}
 		}else{
@@ -86,7 +83,7 @@ class Users extends CI_Controller {
 				array_push($closestTDriverIds, $location->id);
 			}
 		}
-		$this->UserModel->create_initial_request_poll($rideInfo->rideId,$closestTDriverIds);
+		$this->RideModel->createInitialRequestPoll($rideInfo->rideId,$closestTDriverIds);
 
 		//...Send Push Notifications to drivers here
 
@@ -161,7 +158,7 @@ class Users extends CI_Controller {
 	{
 		// $userName = $this->input->get('username');
 		$userId = $this->UserModel->login($username);
-		$contents = $this->output
+		$this->output
                   ->set_content_type('application/json')
                   ->set_output(json_encode((object)($userId)));
 	}

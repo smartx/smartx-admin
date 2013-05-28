@@ -50,15 +50,16 @@ var contextMenu;
 
               console.log(selectedId);
 
-              var userId = "u="+marker.title.substring(1);
-              var lat = "la="+loadedUsers[selectedId.substring(1)].lat;
-              var lng = "ln="+loadedUsers[selectedId.substring(1)].lng;
+              var userId = marker.title.substring(1);
+              var userIdParam="u="+userId;
+              var lat = "la="+loadedUsers[userId].lat;
+              var lng = "ln="+loadedUsers[userId].lng;
               var address = 'a=Some Address';
               var reference='r=reference';
               $.ajax({ 
                     url: "users/start_ride",
                     type:'POST',
-                    data:userId+"&"+lat+"&"+lng+"&"+address+"&"+reference,
+                    data:userIdParam+"&"+lat+"&"+lng+"&"+address+"&"+reference,
                     success: function(data){
                       console.log("users/start_ride");
                       console.log(data);
@@ -226,7 +227,7 @@ var contextMenu;
                 }).done(function(userReturnedId) {
                   console.log("user created");
                   console.log(userReturnedId);
-                  event.overlay.setTitle(userReturnedId)
+                  event.overlay.setTitle('u'+userReturnedId);
                   event.overlay.setIcon(userMarkerIcon);
 
                   loadedUsers[userReturnedId]=[];

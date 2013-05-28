@@ -72,9 +72,9 @@ class UserModel extends CI_Model {
 
 		$origin = $this->getLatLngFromUserAddress($originAddressId);
 		// print_r($origin);
-		$sql = "INSERT INTO  ride_events(ride_id, lat, lng, type, reg_date)
+		$sql2 = "INSERT INTO  ride_events(ride_id, lat, lng, type, reg_date)
 			VALUES (?,?,?, 1,NOW())";
-		$query = $this->db->query($sql,array($lastInsertId, $origin->lat, $origin->lng));
+		$this->db->query($sql2,array($lastInsertId, $origin->lat, $origin->lng));
 		return (object)array('rideId'=>$lastInsertId,'lat'=>$origin->lat, 'lng'=>$origin->lng);
 	}
 
@@ -88,22 +88,7 @@ class UserModel extends CI_Model {
 		return $this->db->affected_rows();
 	}
 
-	function create_initial_request_poll($rideId, $tdriverIdArray){
-		$N = count($tdriverIdArray);
-		if($N==0) return;
 
-		$sql = "INSERT INTO ride_request_polls(ride_id, tdriver_id, status, reg_date)
-			VALUES";
-		
-		for($i=0;$i<$N;$i++){
-			$sql.=" (".$rideId.", ?, 1, NOW())";
-			if($i<$N-1){
-				$sql.=',';	
-			}
-		}
-		$query = $this->db->query($sql,$tdriverIdArray);
-
-	}
 
 	function getLatLngFromUserAddress($userAddressId){
 		$sql = "SELECT creator_user_id, lat, lng FROM user_addresses WHERE address_id = ?";
