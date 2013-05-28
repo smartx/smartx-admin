@@ -38,6 +38,7 @@ function init(){
                     if(nAttempts>=5){
                         newlat=limaCenter[0];
                         newlng=limaCenter[1];
+                        break;
                     }else{
                         var si=Math.floor(Math.random()*4);
                         var distance = Math.random()*40;

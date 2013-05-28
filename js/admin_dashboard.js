@@ -210,7 +210,7 @@ var contextMenu;
                 }).done(function(returnedId) {
                   console.log("tdriver created");
                   console.log(returnedId);
-                  event.overlay.setTitle(returnedId)
+                  event.overlay.setTitle('d'+returnedId)
                   dbMarkers['d'+returnedId] = event.overlay;
                   loadedTDrivers[returnedId]=[];
                   loadedTDrivers[returnedId]['lat']=lat;
