@@ -33,8 +33,52 @@ class Users extends CI_Controller {
 		                  ->set_output(json_encode($locations));
 		 // echo json_encode($data['tdrivers_locations']);
 	}
-
-
+        
+        public function fetch_ride_status(){
+            $userId = $this->input->get('id');
+//            print_r($newLocations);
+//            $userId = $newLocations['id'];
+            
+            // get valid ride (status 1,2, or 7) 
+            $ride = $this->UserModel->getUserRide($userId);
+//            print_r($ride);
+            $n = count($ride);
+//            print_r($n);
+            if($n==0){
+                $data = (object)array("data"=>array("status"=>0));
+                $this->output->set_content_type('application/json')
+		                  ->set_output(json_encode($data));
+            }else{
+                if($ride->status==1){
+                    $data = (object)array("data"=>
+                    array(
+                        "status"=>1,
+                        "ride_id"=>$ride->ride_id,
+                        "ex_time"=>2)
+                    );
+                    $this->output->set_content_type('application/json')
+		                  ->set_output(json_encode($data));
+                }else if($ride->status==2){
+                    $driver = $this->UserModel->getRideDriver($ride->ride_id);
+                    $data = (object)array("data"=>
+                    array(
+                        "status"=>2,
+                        "ride_id"=>$ride->ride_id,
+                        "tdriver_id"=>$driver->tdriver_id,
+                        "tdriver_name"=>$driver->name,
+                        "tdriver_ll"=>$driver->lat.",".$driver->lng,
+                        "tdriver_pic"=>"http://images1.wikia.nocookie.net/__cb20130206142552/bourne/images/9/95/Bourne-Passport.jpg",
+                        "tdriver_phone"=>$driver->phone,
+                        "ex_time"=>2,
+                        "ex_pickup_time"=>3)
+                    );
+                    $this->output->set_content_type('application/json')
+		                  ->set_output(json_encode($data));
+                }
+            }
+//            $ride
+        }
+        
 	public function create_user()
 	{
 		$newLocations = $this->input->post('data');

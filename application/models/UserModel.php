@@ -16,7 +16,38 @@ class UserModel extends CI_Model {
 		$query = $this->db->get_where('fb_users', array('fb_id' => $fbId));
 		return $query->result()->user_id;
 	}
-
+        
+        public function getUserRideStatusByUserId($userId){
+            $ride = $this->getUserRide($userId);
+        }
+        
+        //      BEGIN fetch ride status
+	function getUserRide($userId){
+		$sql = "SELECT t.ride_id, a.lat, a.lng, t.status, t.request_date
+                    FROM taxi_rides t
+                    JOIN user_addresses a ON ( a.creator_user_id = t.user_id ) 
+                    WHERE creator_user_id = ?
+                    AND t.status
+                    IN ( 1, 2, 7 )";
+		$query = $this->db->query($sql,array($userId));
+		return $query->row();
+	}
+        function getRideDriver($rideId){
+		$sql = "SELECT rrp.ride_id, rrp.tdriver_id, 
+                                td.name, X( tdll.location ) lat, Y( tdll.location ) lng,
+                                td.phone
+                        FROM ride_request_polls rrp
+                        JOIN tdrivers td
+                        USING ( tdriver_id ) 
+                        JOIN tdriver_latest_locations tdll
+                        USING ( tdriver_id ) 
+                        WHERE rrp.ride_id = ?
+                        AND rrp.status =2";
+		$query = $this->db->query($sql,array($rideId));
+		return $query->row();
+	}
+        //      END fetch ride status
+        
 	function clearRequestPolls(){
 		$sql = "DELETE FROM ride_request_polls";
 		$query = $this->db->query($sql);
@@ -42,26 +73,19 @@ class UserModel extends CI_Model {
 	function createNewUser($initialLocation){
 
 		$sql = "INSERT INTO users(first_name, last_name, email, username) VALUES ('same name','same','same@gmail.com','same')";
-		$query = $this->db->query($sql);
+		$this->db->query($sql);
 		$lastInsertId = $this->db->insert_id();
-		$sql = "INSERT INTO user_latest_locations(user_id, lat, lng, reg_date) VALUES (LAST_INSERT_ID(),?,?,NOW())";
-		$query = $this->db->query($sql, $initialLocation);
+		$sql2 = "INSERT INTO user_latest_locations(user_id, lat, lng, reg_date) VALUES (LAST_INSERT_ID(),?,?,NOW())";
+		$this->db->query($sql2, $initialLocation);
 		return $lastInsertId;
 	}
 
 	function clearUserLocations(){
 		$sql="DELETE FROM users";
-		$quer = $this->db->query($sql);
+		$this->db->query($sql);
 		$sql="DELETE FROM user_latest_locations";
-		$quer = $this->db->query($sql);
+		$this->db->query($sql);
 		return $this->db->affected_rows();
-	}
-
-	function getUserRide($userId){
-		$sql = "SELECT a.lat, a.lng, t.request_date FROM taxi_rides t JOIN user_addresses a using(user_id) 
-		WHERE user_id = ? AND ";
-		$query = $this->db->query($sql,array($userId));
-		return $query->result();
 	}
 
 	function startRide($userId, $originAddressId){

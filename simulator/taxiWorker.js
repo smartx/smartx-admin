@@ -15,7 +15,7 @@ self.addEventListener('message', function(e) {
 		tdriver_id=e.data.tdriver_id;
 		lat=e.data.lat;
 		lng=e.data.lng;
-		interval=1+Math.random()*20;
+		interval=1+Math.random()*10; // Interval for refreshing location
 		seconds=interval;
 	}
 	init();
@@ -33,8 +33,8 @@ function init(){
 		var newlng;
 		var comment='wandering';
 		if(pointToGoLat!=null && pointToGoLng!=null){ // There is a user waiting for this driver
-			//from 166 meters to 250 meters - 60km/h to 90km/h
-			var distanceInMettersIWouldTravelInSecondsSeconds = 166+Math.random()*84*10/seconds;
+			//from 166 meters to 250 meters - 60km/h to 90km/h // UPD: 126
+			var distanceInMettersIWouldTravelInSecondsSeconds = 126+Math.random()*84*10/seconds;
 			distanceInMettersIWouldTravelInSecondsSeconds/=1000;
 			// distanceInMettersIWouldTravelInSecondsSeconds = 10/seconds;	
 			var distanceToUser = distanceFromTwoPoints(lat, lng, pointToGoLat, pointToGoLng);
@@ -76,7 +76,7 @@ function init(){
                                 break;
                             }else{
                                 var si=Math.floor(Math.random()*4);
-                                var distance = Math.random()*40;
+                                var distance = Math.random()*10;
                                 newlat = lat+di[si]*distance/factor;
                                 newlng = lng+dj[si]*distance/factor;
                             }
@@ -89,11 +89,12 @@ function init(){
 		lat=newlat;
 		lng=newlng;
 		 $.ajax.post({
-	        url: "../tdriver/update_location",
+	        url: "../tdriver/bot_update_location1",
 	        data:"id="+tdriver_id+"&lat="+newlat+"&lng="+newlng,
 	        type:'json',
 	        success: function(data) {
-                    return;
+//                    self.postMessage(data);
+//                    return;
 	        	var a = {id:tdriver_id, data:data};
 	        	self.postMessage(a);
 	        	if(data.json!=null && data.json.length!=0){

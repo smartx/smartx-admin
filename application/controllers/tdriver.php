@@ -66,6 +66,51 @@ class TDriver extends CI_Controller {
 		
 	}
         
+        public function bot_update_location1()
+	{
+		$tdriverId = $this->input->post('id');
+                $lat = $this->input->post('lat');
+                $lng = $this->input->post('lng');
+                
+                $this->TDriverModel->updateTDriverLocation($tdriverId, $lat, $lng);
+                $waitingRides = $this->RideModel->getWaitingRidesForTDriver($tdriverId);
+//                print_r($waitingRides);
+                $waitingRidesWhitinTDriverRange=array();
+                $returningWaitingRidesWhitinTDriverRange=array();
+                for($i=0;$i<count($waitingRides);$i++){
+//                    print_r();
+                    if(RIDE_SEARCH_RADIUS >= $this->distance($waitingRides[$i]->pickup_lat, $waitingRides[$i]->pickup_lng, $lat, $lng)){
+                        array_push($waitingRidesWhitinTDriverRange,
+                            (object)array("ride_id"=>$waitingRides[$i]->ride_id,
+                                "lat"=>$waitingRides[$i]->pickup_lat,
+                                "lng"=>$waitingRides[$i]->pickup_lng,
+                                "name"=>$waitingRides[$i]->first_name,
+                                "phone"=>$waitingRides[$i]->phone,
+                                "address"=>$waitingRides[$i]->address,
+                                "ref"=>$waitingRides[$i]->reference));
+                        array_push($returningWaitingRidesWhitinTDriverRange,$waitingRides[$i]->ride_id);
+                    }
+                }
+//                print_r($waitingRidesWhitinTDriverRange);
+                
+                $this->RideModel->addTDriverToRidePoll($tdriverId, $returningWaitingRidesWhitinTDriverRange);
+//		// print_r($locationToGo);
+                
+                $locationToGo = $this->TDriverModel->getLocationToGo($tdriverId);
+                $contents = $this->output->set_content_type('application/json')
+		                  ->set_output(json_encode($locationToGo));
+                
+//		if($locationToGo!= null && $this->distance($locationToGo->lat, $locationToGo->lng, $lat, $lng)<=0.02){
+//			$this->TDriverModel->startRiding($tdriverId, $locationToGo->ride_id, $lat, $lng);
+//			$this->output
+//		                  ->set_content_type('application/json')
+//		                  ->set_output(json_encode((object)array("data"=>$waitingRidesWhitinTDriverRange)));
+//		}else{
+//			
+//		}
+//		
+	}
+        
         public function bot_update_location()
 	{
 		$tdriverId = $this->input->post('id');

@@ -64,14 +64,17 @@ class TDriverModel extends CI_Model{
 		$sql2 = "UPDATE tdriver_latest_locations SET location = POINT(?,?), reg_date = NOW() WHERE tdriver_id = ?";
 		$this->db->query($sql2, array($lat, $lng, $tdriverId));
 
-		// return current location to pick up user, if any (used for testing)
-		$sql3 = "SELECT rrp.ride_id, ua.lat, ua.lng 
+	}
+        
+// return current location to pick up user, if any (used for testing)
+        function getLocationToGo($tdriverId){
+            $sql3 = "SELECT rrp.ride_id, ua.lat, ua.lng 
 				FROM ride_request_polls rrp JOIN taxi_rides tr using(ride_id) 
 					JOIN user_addresses ua on(tr.origin_address_id = ua.address_id) 
 				WHERE tdriver_id = ? AND rrp.status = 2";
-		$query3 = $this->db->query($sql3, array($tdriverId));
-		return $res = $query3->row();
-	}
+            $query3 = $this->db->query($sql3, array($tdriverId));
+            return $res = $query3->row();
+        }
 
 	function createNewTDriver($initialLocation){
 
