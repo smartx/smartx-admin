@@ -151,8 +151,8 @@ var contextMenu;
               type:"POST",
               data:"selectedPoint="+JSON.stringify({
                 'selected_id':selectedMarker.title,
-                'lat':selectedMarker.position.jb,
-                'lng':selectedMarker.position.kb
+                'lat':getLat(selectedMarker),
+                'lng':getLng(selectedMarker)
               })
             }).done(function(data) {
               console.log(data);
@@ -163,14 +163,14 @@ var contextMenu;
                 console.log('radius = '+data[i]['distance']/2);
                 var toMarker = dbMarkers['d'+data[i]["to"]];
                 // var fromMarker = dbMarkers['d'+data[i]["to"]];
-                var lat = (dbMarkers[data[i]["from"]].position.jb + toMarker.position.jb)/2;
-                var lng = (dbMarkers[data[i]["from"]].position.kb + toMarker.position.kb)/2;
+                var lat = getLat(dbMarkers[data[i]["from"]]) + getLat(toMarker)/2;
+                var lng = getLng(dbMarkers[data[i]["from"]]) + getLng(toMarker)/2;
                 console.log(lat);
                 console.log(lng);
                 
                 var flightPlanCoordinates = [
-                  new google.maps.LatLng(dbMarkers[data[i]["from"]].position.jb, dbMarkers[data[i]["from"]].position.kb),
-                  new google.maps.LatLng(toMarker.position.jb, toMarker.position.kb)
+                  new google.maps.LatLng(getLat(dbMarkers[data[i]["from"]]), getLng(dbMarkers[data[i]["from"]])),
+                  new google.maps.LatLng(getLat(toMarker), getLng(toMarker))
                 ];
                 var flightPath = new google.maps.Polyline({
                   path: flightPlanCoordinates,
@@ -200,8 +200,8 @@ var contextMenu;
 //              var lat = event.overlay.position.nb;
 //                var lng = event.overlay.position.mb;
 
-            var lat = event.overlay.position.ob;
-            var lng = event.overlay.position.pb;
+            var lat = getLat(event.overlay);
+            var lng = getLng(event.overlay);
               console.log("event.latLng");
               console.log(event);
 //              console.log(event.getlatLng());
@@ -496,8 +496,9 @@ var contextMenu;
             delete rideRequestTDriverToPickupPolylineStore[did][rideRequestId];
           }else{
             // create new line as it does not exists
-            var tdriverLat=dbMarkers[did].position.jb;
-            var tdriverLng=dbMarkers[did].position.kb;
+            var tdriverLat= getLat(dbMarkers[did]);
+            var tdriverLng= getLng(dbMarkers[did]);
+
             var flightPath = new google.maps.Polyline({
                 path: [pickupLatLng,new google.maps.LatLng(tdriverLat, tdriverLng)],
                 strokeColor: poliColor,
@@ -525,8 +526,8 @@ var contextMenu;
       function moveMarker(id){
         // id=50;
         // console.log(id+" "+currentDelta[id]);
-        var newPosLat = dbMarkers[id].position.jb + deltaLat[id];
-        var newPosLng = dbMarkers[id].position.kb + deltaLng[id];
+        var newPosLat = getLat(dbMarkers[id]) + deltaLat[id];
+        var newPosLng = getLng(dbMarkers[id]) + deltaLng[id];
         var latlng = new google.maps.LatLng(newPosLat, newPosLng);
 
         dbMarkers[id].setPosition(latlng);
@@ -548,4 +549,16 @@ var contextMenu;
             }, delay);
         }
       }
-      google.maps.event.addDomListener(window, 'load', initialize);
+
+    function getLat(marker){
+        return marker.position.ob;
+    }
+
+    function getLng(marker){
+        return marker.position.pb;
+    }
+
+
+
+
+    google.maps.event.addDomListener(window, 'load', initialize);
