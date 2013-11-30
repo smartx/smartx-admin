@@ -29,7 +29,7 @@ contextMenuOptions.menuItems=menuItems;
 var contextMenu;
 
       function initialize() {
-        // google.maps.visualRefresh=true;
+        google.maps.visualRefresh=false;
         var mapOptions = {
           center: new google.maps.LatLng(-12.087583,-77.035103),
           zoom: 13,
@@ -197,8 +197,16 @@ var contextMenu;
             if (event.type == google.maps.drawing.OverlayType.MARKER) {
               
               
-              var lat = event.overlay.position.jb;
-              var lng = event.overlay.position.kb;
+//              var lat = event.overlay.position.nb;
+//                var lng = event.overlay.position.mb;
+
+            var lat = event.overlay.position.ob;
+            var lng = event.overlay.position.pb;
+              console.log("event.latLng");
+              console.log(event);
+//              console.log(event.getlatLng());
+
+
               var latlng = [lat, lng];
               console.log("sending "+ latlng);
               if($("#tdriver>div>div>strong").html()=='tdriver'){
